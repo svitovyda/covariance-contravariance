@@ -85,4 +85,20 @@ object ExplanationClasses {
     }
   }
 
+  /**
+    * getters and setters are most used examples of producer/consumer
+    */
+  object Demo4 {
+    class MyClassVar[T](var value: T) // ok
+    class MyClassVarCo[+T](var value: T) // Error:
+      // covariant type T occurs in contravariant position in type T of value value_=
+    class MyClassVarContra[-T](var value: T) // Error:
+      // contravariant type T occurs in covariant position in type => T of method value
+
+    class MyClassVal[T](val value: T) // ok
+    class MyClassValCo[+T](val value: T) // ok
+    class MyClassValContra[-T](val value: T) // Error:
+      // contravariant type T occurs in covariant position in type => T of value value
+  }
+
 }
