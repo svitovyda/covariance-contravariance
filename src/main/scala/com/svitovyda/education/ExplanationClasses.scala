@@ -20,6 +20,17 @@ object ExplanationClasses {
     new MyClassContra[Drawable]
     new MyClassContra[AnyRef]
     new MyClassContra[Any]
+
+    // here I use explicit form for specifying a Tuple
+    def f1(a: Tuple3[Shape, Int, String]): Unit = {}
+
+    val a: Shape = Square()
+    f1(a, 2, "")
+    f1(FilledCircle(), ???, null) /// ??? here - to get value of type Nothing
+
+    val b: Tuple3[AnyRef, AnyVal, Any] = (a, 3, "")
+    // (Any, Any, Any) >: (AnyRef, AnyVal, AnyRef) >: ... >: (Shape, Int, String) >:
+    //   (Null, Nothing, Null) >: (Nothing, Nothing, Nothing)
   }
 
   object Demo2 {
