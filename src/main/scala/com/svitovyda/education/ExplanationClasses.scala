@@ -52,8 +52,10 @@ object ExplanationClasses {
       /**
         * we can assign result of read to val/var of type -T, like in
         * `val a: Drawable = new Producer[Square].read()`
-        * but we can't define something like `def read(): -T` :)
+        * but we can't define something like `def read(): -T` :) (it can be defined as
+        * `def read[B >: T](): B` if it is needed in this way)
         * this is why we can define `class Producer[T] {`
+        *
         * @return T
         */
       def read(): T = ??? // co-variant position
@@ -66,15 +68,16 @@ object ExplanationClasses {
     // fCo(new Producer[Square])
     // fCo(new Producer[FilledCircle])
 
-
     // with [+T] - Error:
     // covariant type T occurs in contravariant position in type T of value x
     class Consumer[T] {
       /**
         * almost the same: we can call `write(x: Drawable)` with parameter of type `Circle`
-        * but we can't define here write(x: +T) :)
+        * but we can't define here write(x: +T) :) (it can be defined as
+        * `def write[B <: T](x: B): Unit` if it is needed in this way)
         * so we can define Consumer as class Consumer[-T]
-        * @param x: T
+        *
+        * @param x : T
         */
       def write(x: T): Unit = ??? // contra-variant position
     }
@@ -100,16 +103,59 @@ object ExplanationClasses {
     * getters and setters are most used examples of producer/consumer
     */
   object Demo4 {
-    class MyClassVar[T](var value: T) // ok
-    class MyClassVarCo[+T](var value: T) // Error:
-      // covariant type T occurs in contravariant position in type T of value value_=
-    class MyClassVarContra[-T](var value: T) // Error:
-      // contravariant type T occurs in covariant position in type => T of method value
+    class MyClassVar[T](var value: T)
+    // ok
+    class MyClassVarCo[+T](var value: T)
+    // Error:
+    // covariant type T occurs in contravariant position in type T of value value_=
+    class MyClassVarContra[-T](var value: T)
+    // Error:
+    // contravariant type T occurs in covariant position in type => T of method value
 
-    class MyClassVal[T](val value: T) // ok
-    class MyClassValCo[+T](val value: T) // ok
-    class MyClassValContra[-T](val value: T) // Error:
-      // contravariant type T occurs in covariant position in type => T of value value
+    class MyClassVal[T](val value: T)
+    // ok
+    class MyClassValCo[+T](val value: T)
+    // ok
+    class MyClassValContra[-T](val value: T)
+    // Error:
+    // contravariant type T occurs in covariant position in type => T of value value
+  }
+
+  object Demo5 {
+    sealed abstract class MyList[+T] {
+      def head: T
+      def tail: MyList[T]
+      def isEmpty: Boolean
+      /**
+        * Lists are co-variant, you might yse them as:
+        * `val shapes = List[Shape](Circle, Square, FilledCircle)`
+        * But also you might want to write:
+        *
+        * @example {{{
+        *           val drawable = ...
+        *           val dravables = dravable :: shapes
+        *          }}}
+        */
+      def :+:[B >: T](x: B): MyList[B] = new :+:(x, this)
+    }
+
+    final case class :+:[T](head: T, tail: MyList[T]) extends MyList[T] {
+      override def isEmpty: Boolean = false
+    }
+
+    object MyNil extends MyList[Nothing] {
+      override def head: Nothing = throw new Error
+      override def tail: MyList[Nothing] = throw new Error
+      override def isEmpty: Boolean = true
+    }
+
+    object MyList {
+      def apply[T](elems: T*): MyList[T] = {
+        elems.foldRight[MyList[T]](MyNil) { case (elem, z) =>
+          :+:(elem, z)
+        }
+      }
+    }
   }
 
 }
