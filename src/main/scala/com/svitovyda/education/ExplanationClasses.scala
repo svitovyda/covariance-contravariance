@@ -94,7 +94,7 @@ object ExplanationClasses {
     }
 
     def fNon(pipe: Pipe[Shape]): Unit = {
-      val l = List(new Circle(), Square(), FilledCircle())
+      val l = List(Circle(), Square(), FilledCircle())
       val r = l map pipe.f
     }
   }

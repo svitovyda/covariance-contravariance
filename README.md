@@ -20,4 +20,5 @@ them don't look unreadable like those examples that use only
 ### `ExplanationClasses`
 Contains Demo objects with different class definitions and usages of generic types
 
+### `ExplanationFunctions`
 _tba_
