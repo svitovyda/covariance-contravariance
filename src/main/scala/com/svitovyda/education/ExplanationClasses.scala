@@ -54,7 +54,7 @@ object ExplanationClasses {
         * `val a: Drawable = new Producer[Square].read()`
         * but we can't define something like `def read(): -T` :) (it can be defined as
         * `def read[B >: T](): B` if it is needed in this way)
-        * this is why we can define `class Producer[T] {`
+        * this is why we can define `class Producer[+T] {`
         *
         * @return T
         */
